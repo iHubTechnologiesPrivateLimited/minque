@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.qurix.minque">
+    package="com.qurix.quelo">
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
@@ -27,7 +27,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name="com.qurix.ihubtechnologies.minque.activities.SplashActivity"
+            android:name="com.qurix.quelo.activities.SplashActivity"
             android:screenOrientation="landscape">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -37,9 +37,9 @@
 
             </intent-filter>
         </activity>
-        <activity android:name="com.qurix.ihubtechnologies.minque.activities.WebviewActivity"
+        <activity android:name="com.qurix.quelo.activities.WebviewActivity"
             android:screenOrientation="landscape"/>
-        <activity android:name="com.qurix.ihubtechnologies.minque.activities.SetupActivity"
+        <activity android:name="com.qurix.quelo.activities.SetupActivity"
             android:screenOrientation="landscape"/>
         <!--<receiver android:name="com.example.ihubtechnologies.superdoctv.utils.NetworkChangeReceiver">-->
         <!--<intent-filter>-->
