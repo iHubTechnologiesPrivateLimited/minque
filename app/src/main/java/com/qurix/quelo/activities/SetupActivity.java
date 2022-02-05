@@ -128,10 +128,13 @@ public class SetupActivity extends BaseActivity {
     private void sendMacAddress(String macId) {
 
         Call<DisplayCodeResponse> call = client.getDisplayCode(macId);
+
         call.enqueue(new Callback<DisplayCodeResponse>() {
+
             @Override
             public void onResponse(Call<DisplayCodeResponse> call, final Response<DisplayCodeResponse> response) {
-//
+                Log.d("displayyyyyyyy",response.toString());
+
                 sessionManager.setDisplyCode(response.body().getDisplayCode());
                 String s = response.body().getDisplayCode();
                 s = s.replaceAll(".", "$0 ");
@@ -152,6 +155,7 @@ public class SetupActivity extends BaseActivity {
     }
 
     private void InitializeSse(String displayCode) {
+        Log.d("madhu", ServiceGenarator.BASE_API + "displayScreenEvent/" + displayCode);
         request = new Request.Builder().url(ServiceGenarator.BASE_API + "displayScreenEvent/" + displayCode).build();
 
         listner = new ServerSentEvent.Listener() {
@@ -198,7 +202,6 @@ public class SetupActivity extends BaseActivity {
             public void onClosed(ServerSentEvent sse) {
 
             }
-
             @Override
             public Request onPreRetry(ServerSentEvent sse, Request originalRequest) {
                 return null;

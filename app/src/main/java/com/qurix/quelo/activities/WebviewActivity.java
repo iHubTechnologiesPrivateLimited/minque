@@ -16,6 +16,7 @@ import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.qurix.quelo.R;
 import com.qurix.quelo.network.ServiceGenarator;
@@ -111,13 +112,15 @@ public class WebviewActivity extends BaseActivity  {
                 try {
                     if (isOnline(context)) {
 
-                        //Toast.makeText(WebviewActivity.this, "Connected", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(WebviewActivity.this, "Connected", Toast.LENGTH_SHORT).show();
+                        finish();
+                        startActivity(getIntent());
 
                     } else {
 
                         //  clearHandlers();
                         sse.close();
-                        //Toast.makeText(WebviewActivity.this, "No Internet connection", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(WebviewActivity.this, "No Internet connection", Toast.LENGTH_SHORT).show();
                     }
                 } catch (NullPointerException e) {
                     e.printStackTrace();
@@ -159,11 +162,12 @@ public class WebviewActivity extends BaseActivity  {
         listner = new ServerSentEvent.Listener() {
             @Override
             public void onOpen(ServerSentEvent sse, Response response) {
-
+Log.d("madhu","on open called");
             }
 
             @Override
             public void onMessage(ServerSentEvent sse, String id, String event, String message) {
+                Log.d("madhu","on message called");
                 try {
                     Log.d("madhusse", message);
                     JSONObject obj = new JSONObject(message);
@@ -186,26 +190,30 @@ public class WebviewActivity extends BaseActivity  {
 
             @Override
             public void onComment(ServerSentEvent sse, String comment) {
-
+                Log.d("madhu","on comment called");
             }
 
             @Override
             public boolean onRetryTime(ServerSentEvent sse, long milliseconds) {
+                Log.d("madhu","on retry time called");
                 return false;
             }
 
             @Override
             public boolean onRetryError(ServerSentEvent sse, Throwable throwable, Response response) {
+                Log.d("madhu","on retry error called");
                 return false;
             }
 
             @Override
             public void onClosed(ServerSentEvent sse) {
+                Log.d("madhu","on closed called");
 
             }
 
             @Override
             public Request onPreRetry(ServerSentEvent sse, Request originalRequest) {
+                Log.d("madhu","on pre retry called");
                 return null;
             }
         };

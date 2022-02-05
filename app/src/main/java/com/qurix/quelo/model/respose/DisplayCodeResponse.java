@@ -67,4 +67,16 @@ public class DisplayCodeResponse implements Serializable {
     public void setLocUuid(Object locUuid) {
         this.locUuid = locUuid;
     }
+
+    @Override
+    public String toString() {
+        return "DisplayCodeResponse{" +
+                "macId='" + macId + '\'' +
+                ", displayCode='" + displayCode + '\'' +
+                ", description=" + description +
+                ", locationId=" + locationId +
+                ", url=" + url +
+                ", locUuid=" + locUuid +
+                '}';
+    }
 }
