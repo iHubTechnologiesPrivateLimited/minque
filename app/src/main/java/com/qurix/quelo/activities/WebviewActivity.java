@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -46,6 +47,7 @@ public class WebviewActivity extends BaseActivity  {
     private ServerSentEvent.Listener listner;
 
     BroadcastReceiver myReciver;
+   boolean toCheckInitially = true;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -59,7 +61,10 @@ public class WebviewActivity extends BaseActivity  {
         } else {
             webUrl = sessionManager.getDisplayurl();
         }
-
+        if (internetStatus.isNetworkAvailable()) {
+            toCheckInitially = true;
+            Log.d("madhu","one"+toCheckInitially);
+        }
         progressBarCyclic.setVisibility(View.VISIBLE);
         mywebview.getSettings().setJavaScriptEnabled(true);
         mywebview.getSettings().setLoadWithOverviewMode(true);
@@ -111,13 +116,17 @@ public class WebviewActivity extends BaseActivity  {
             public void onReceive(Context context, Intent intent) {
                 try {
                     if (isOnline(context)) {
+                        if(!toCheckInitially) {
 
-                        Toast.makeText(WebviewActivity.this, "Connected", Toast.LENGTH_SHORT).show();
-                        finish();
-                        startActivity(getIntent());
 
+                            Toast.makeText(WebviewActivity.this, "Connected", Toast.LENGTH_SHORT).show();
+                            finish();
+                            startActivity(getIntent());
+
+                        }
                     } else {
 
+                        toCheckInitially = false;
                         //  clearHandlers();
                         sse.close();
                         Toast.makeText(WebviewActivity.this, "No Internet connection", Toast.LENGTH_SHORT).show();
@@ -145,16 +154,22 @@ public class WebviewActivity extends BaseActivity  {
 
 
     private boolean isOnline(Context context) {
-        try {
-            Process p1 = Runtime.getRuntime().exec("ping -c 1 www.google.com");
-            int returnVal = p1.waitFor();
-            boolean reachable = (returnVal == 0);
-            return reachable;
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        return false;
+        ConnectivityManager connMgr = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+        boolean isOnline = (networkInfo != null && networkInfo.isConnected());
+
+
+//        try {
+//            Process p1 = Runtime.getRuntime().exec("ping -c 1 www.google.com");
+//            int returnVal = p1.waitFor();
+//            boolean reachable = (returnVal == 0);
+//            return reachable;
+//        } catch (Exception e) {
+//            // TODO Auto-generated catch block
+//            e.printStackTrace();
+//        }
+//        return false;
+        return isOnline;
     }
 
     private void listenSse() {
