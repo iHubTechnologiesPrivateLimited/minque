@@ -27,6 +27,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
+            android:exported="true"
             android:name="com.qurix.quelo.activities.SplashActivity"
             android:screenOrientation="landscape">
             <intent-filter>

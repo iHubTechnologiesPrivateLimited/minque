@@ -1,5 +1,6 @@
 package com.qurix.quelo.activities;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
@@ -7,6 +8,7 @@ import android.net.NetworkInfo;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
@@ -24,9 +26,11 @@ import com.here.oksse.ServerSentEvent;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
 import java.net.NetworkInterface;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -50,6 +54,7 @@ public class SetupActivity extends BaseActivity {
     OkSse okSse = new OkSse();
     ServerSentEvent sse;
     private ServerSentEvent.Listener listner;
+    UUID androidId_UUID;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -68,13 +73,23 @@ public class SetupActivity extends BaseActivity {
         wifiname.setText(ssid);
 
         //get mac id
-        String macId = getMacAddress();
-        Log.d("macid", macId);
-        if (internetStatus.isNetworkAvailable()) {
-            sendMacAddress(macId);
-        } else {
-            Toast.makeText(SetupActivity.this, "No internet connection", Toast.LENGTH_SHORT).show();
+//        String macId = getMacAddress();
+        String androidId = Settings.Secure.getString(getContentResolver(),
+                Settings.Secure.ANDROID_ID);
+
+        try {
+            androidId_UUID = UUID
+                    .nameUUIDFromBytes(androidId.getBytes("utf8"));
+            Log.d("macid", androidId_UUID.toString());
+            if (internetStatus.isNetworkAvailable()) {
+                sendMacAddress(androidId_UUID.toString());
+            } else {
+                Toast.makeText(SetupActivity.this, "No internet connection", Toast.LENGTH_SHORT).show();
+            }
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
         }
+
 
 
     }
@@ -82,7 +97,7 @@ public class SetupActivity extends BaseActivity {
     private String getWifiSsid(Context context) {
         String ssid = null;
         ConnectivityManager connManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+        @SuppressLint("MissingPermission") NetworkInfo networkInfo = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
         if (networkInfo.isConnected()) {
             final WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
             final WifiInfo connectionInfo = wifiManager.getConnectionInfo();
@@ -101,17 +116,21 @@ public class SetupActivity extends BaseActivity {
         try {
             String interfaceName = "wlan0";
             List<NetworkInterface> interfaces = Collections.list(NetworkInterface.getNetworkInterfaces());
+            Log.d("interfacessssss",interfaces.toString());
             for (NetworkInterface intf : interfaces) {
+                Log.d("interfacessssss",interfaceName+"===="+intf.getName());
                 if (!intf.getName().equalsIgnoreCase(interfaceName)) {
                     continue;
                 }
 
                 byte[] mac = intf.getHardwareAddress();
+                Log.d("maccccc",mac.toString());
                 if (mac == null) {
                     return "";
                 }
 
                 StringBuilder buf = new StringBuilder();
+//                Log.d("maccccc",mac.toString());
                 for (byte aMac : mac) {
                     buf.append(String.format("%02X:", aMac));
                 }
@@ -126,7 +145,6 @@ public class SetupActivity extends BaseActivity {
     }
 
     private void sendMacAddress(String macId) {
-
         Call<DisplayCodeResponse> call = client.getDisplayCode(macId);
 
         call.enqueue(new Callback<DisplayCodeResponse>() {
@@ -134,12 +152,10 @@ public class SetupActivity extends BaseActivity {
             @Override
             public void onResponse(Call<DisplayCodeResponse> call, final Response<DisplayCodeResponse> response) {
                 Log.d("displayyyyyyyy",response.toString());
-
                 sessionManager.setDisplyCode(response.body().getDisplayCode());
                 String s = response.body().getDisplayCode();
                 s = s.replaceAll(".", "$0 ");
                 uuidcode.setText(s);
-                Log.d("displayyyyyyyy", response.body().getDisplayCode());
 
                 InitializeSse(response.body().getDisplayCode());
 
@@ -155,7 +171,7 @@ public class SetupActivity extends BaseActivity {
     }
 
     private void InitializeSse(String displayCode) {
-        Log.d("madhu", ServiceGenarator.BASE_API + "displayScreenEvent/" + displayCode);
+        Log.d("madhu sse:: ", ServiceGenarator.BASE_API + "displayScreenEvent/" + displayCode);
         request = new Request.Builder().url(ServiceGenarator.BASE_API + "displayScreenEvent/" + displayCode).build();
 
         listner = new ServerSentEvent.Listener() {

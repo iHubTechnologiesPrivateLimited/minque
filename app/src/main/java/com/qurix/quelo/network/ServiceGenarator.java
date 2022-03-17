@@ -16,8 +16,8 @@ public class ServiceGenarator {
     //   public static final String BASE_API = "http://139.59.17.219:9099/imedihubhims/openapi/displayManager/"; //qa
 //    public static final String BASE_API = "http://qurix.ai:8080/qurixHIMS/openapi/displayManager/";
 //  public static final String BASE_API = "http://qurix.ai:8080/qurix_uat/openapi/displayManager/"; // prod
- public static final String BASE_API =  "http://preprod.qurix.io/preprodhims/openapi/displayManager/";
-//  public static final String BASE_API =  "http://qurix.io/hims/openapi/displayManager/";
+// public static final String BASE_API =  "http://preprod.qurix.io/preprodhims/openapi/displayManager/";
+  public static final String BASE_API =  "http://qurix.io/hims/openapi/displayManager/";
  //   public static final String BASE_API =  "https://preprod.qurix.ai/hims/openapi/displayManager/";
     public static Retrofit retrofit = new Retrofit.Builder()
             .baseUrl(BASE_API)
